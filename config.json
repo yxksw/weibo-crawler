@@ -1,7 +1,7 @@
 {
-    "user_id_list": "user_id_list.txt", // 用户ID列表文件路径或用户ID数组，格式：每行一个用户ID，或 ["123456", "789012"]
+    "user_id_list": ["6602486386"], // 用户ID列表文件路径或用户ID数组，格式：每行一个用户ID，或 ["123456", "789012"]
     "only_crawl_original": 0, // 是否只爬取原创微博 0 = 爬取全部（原创+转发），1 = 只爬取原创微博
-    "since_date": "2026-01-01", // 开始爬取的时间范围（格式：YYYY-MM-DD），只爬取该日期之后发布的微博
+    "since_date": 30, // 开始爬取的时间范围（格式：YYYY-MM-DD），只爬取该日期之后发布的微博
     "end_date": "", // 截止爬取的时间范围（格式：YYYY-MM-DD 或 YYYY-MM-DDTHH:MM:SS），为空则不限制，只爬取该日期之前发布的微博
     "start_page": 1, // 从第几页开始爬取，通常保持为1，断点续传时可调整
     "page_weibo_count": 20, // 每页爬取的微博数量（10-50之间），建议：10-20，太大可能被限制
@@ -23,11 +23,11 @@
     "repost_max_download_count": 100, // 单条微博最大转发下载数量， 仅当 download_repost = 1 时生效
     "output_directory": "weibo_data", // 数据输出目录
     "user_id_as_folder_name": 0, // 是否以用户ID作为子文件夹名称 0 = 否，1 = 是
-    "remove_html_tag": 1, // 是否移除微博内容中的HTML标签 0 = 否，1 = 是
-    "cookie": "YOUR_WEIBO_COOKIE_HERE",
-    // 微博Cookie（重要！）
+    "remove_html_tag": 0, // 是否移除微博内容中的HTML标签 0 = 否，1 = 是
+    "cookie": "", // 微博 Cookie（重要！）建议留空，使用环境变量 WEIBO_COOKIE 提供
     // 登录微博后，在浏览器开发者工具中获取
     // 格式：SCF=...; SUB=...; SUBP=...; ALF=...; SSOLoginState=...
+    // 本地运行时可在本字段填写，GitHub Actions 运行时请使用 Secrets
     "sqlite_db_path": "weibo_data/weibo_data.sqlite", // SQLite数据库文件路径，仅当 write_mode 包含 sqlite 时生效
     "mysql_config": {
         "host": "localhost",
