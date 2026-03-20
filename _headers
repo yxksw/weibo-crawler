@@ -1,19 +1,4 @@
-# 根路径
 /*
-  Access-Control-Allow-Origin: *
-  Access-Control-Allow-Methods: GET, POST, OPTIONS
-  Access-Control-Allow-Headers: Content-Type, Authorization
-  Access-Control-Max-Age: 86400
-
-# 具体路径
-/%E5%BC%82%E9%A3%A8%E5%AE%A2/*
-  Access-Control-Allow-Origin: *
-  Access-Control-Allow-Methods: GET, POST, OPTIONS
-  Access-Control-Allow-Headers: Content-Type, Authorization
-  Access-Control-Max-Age: 86400
-
-# JSON 文件
-/**/*.json
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET, POST, OPTIONS
   Access-Control-Allow-Headers: Content-Type, Authorization
