@@ -31,11 +31,11 @@ jobs:
         run: |
           python weibo.py
 
-      - name: Upload weibo data
-        uses: actions/upload-artifact@v4
-        if: always()
+      - name: Push to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: weibo-data-${{ github.run_id }}
-          path: weibo/
-          retention-days: 7
-          if-no-files-found: ignore
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./weibo
+          publish_branch: gh-pages
+          force_orphan: false
+          commit_message: 'Update weibo data: ${{ github.run_id }}'
