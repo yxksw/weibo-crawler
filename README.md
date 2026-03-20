@@ -68,6 +68,24 @@ weibo-crawler/
 - 🔄 **Cookie 过期**：微博 Cookie 会定期过期，需要定期更新
 - 📦 **数据存储**：`gh-pages` 分支会自动保存所有爬取数据
 - ⏱️ **运行频率**：默认每小时运行一次，可在工作流文件中调整
+- 🌐 **跨域访问**：已配置 CORS 头，允许其他项目访问 JSON 文件
+
+## CORS 配置
+
+为了解决跨域访问问题，项目已在 `_headers` 文件中配置了 CORS 头：
+
+```
+/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization
+  Access-Control-Max-Age: 86400
+```
+
+这允许任何域名访问 `gh-pages` 分支中的文件，包括：
+- JSON 文件：`https://weibo-api.050815.xyz/%E5%BC%82%E9%A3%A8%E5%AE%A2/6602486386.json`
+- CSV 文件：`https://weibo-api.050815.xyz/%E5%BC%82%E9%A3%A8%E5%AE%A2/6602486386.csv`
+- Markdown 文件：`https://weibo-api.050815.xyz/%E5%BC%82%E9%A3%A8%E5%AE%A2/2026-03/2026-03-20.md`
 
 ## 技术栈
 
