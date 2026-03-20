@@ -6,6 +6,40 @@
 
 微博 Cookie 是运行爬虫所必需的。请在 GitHub 仓库中配置 Secrets。
 
+## 可选的环境变量（邮件通知）
+
+### SMTP 配置（用于邮件提醒）
+
+| Secret 名称 | 说明 | 示例 |
+|------------|------|------|
+| `SMTP_SERVER` | SMTP 服务器地址 | `smtp.gmail.com` 或 `smtp.163.com` |
+| `SMTP_PORT` | SMTP 端口 | `587` (TLS) 或 `465` (SSL) |
+| `SMTP_USERNAME` | SMTP 用户名/邮箱地址 | `your-email@gmail.com` |
+| `SMTP_PASSWORD` | SMTP 密码/授权码 | `your-app-password` |
+| `NOTIFICATION_EMAIL` | 接收通知的邮箱地址 | `your-email@example.com` |
+
+### 常见邮箱 SMTP 设置
+
+#### Gmail
+- **SMTP_SERVER**: `smtp.gmail.com`
+- **SMTP_PORT**: `587`
+- **SMTP_PASSWORD**: 需要使用 [应用专用密码](https://myaccount.google.com/apppasswords)，而不是你的 Gmail 密码
+
+#### 163 邮箱
+- **SMTP_SERVER**: `smtp.163.com`
+- **SMTP_PORT**: `465`
+- **SMTP_PASSWORD**: 需要使用授权码，而不是邮箱密码
+
+#### QQ 邮箱
+- **SMTP_SERVER**: `smtp.qq.com`
+- **SMTP_PORT**: `465`
+- **SMTP_PASSWORD**: 需要使用授权码
+
+#### Outlook/Hotmail
+- **SMTP_SERVER**: `smtp.office365.com`
+- **SMTP_PORT**: `587`
+- **SMTP_PASSWORD**: 你的 Outlook 密码
+
 ## 配置步骤
 
 ### 1. 获取微博 Cookie
@@ -34,7 +68,17 @@ SCF=xxx; SUB=xxx; SUBP=xxx; SSOLoginState=xxx; ALF=xxx; _T_WM=xxx
    - **Value**: 粘贴你复制的 Cookie 值
 6. 点击 **Add secret**（添加密钥）
 
-### 3. 验证配置
+### 3. 配置 SMTP 邮件通知（可选）
+
+如果你想在 Cookie 即将过期或失效时收到邮件通知，请添加以下 Secrets：
+
+1. `SMTP_SERVER` - 你的 SMTP 服务器地址
+2. `SMTP_PORT` - SMTP 端口（通常是 587 或 465）
+3. `SMTP_USERNAME` - 发件邮箱地址
+4. `SMTP_PASSWORD` - 邮箱授权码/应用密码
+5. `NOTIFICATION_EMAIL` - 接收通知的邮箱地址（可以与 SMTP_USERNAME 相同）
+
+### 4. 验证配置
 
 配置完成后，你可以：
 
@@ -43,21 +87,40 @@ SCF=xxx; SUB=xxx; SUBP=xxx; SSOLoginState=xxx; ALF=xxx; _T_WM=xxx
 3. 点击 **Run workflow** 手动触发一次运行
 4. 查看运行日志，确认爬虫是否正常工作
 
+## 邮件通知说明
+
+系统会在以下情况发送邮件通知：
+
+### 1. Cookie 更新提醒（每25天）
+- **触发条件**：每月 1 号和 26 号自动触发
+- **邮件内容**：提醒更新 Cookie，包含详细步骤
+- **工作流文件**：`.github/workflows/cookie-renewal-reminder.yml`
+
+### 2. Cookie 失效警告（实时）
+- **触发条件**：爬虫运行失败时
+- **邮件内容**：警告 Cookie 可能已过期，包含查看日志链接
+- **工作流文件**：`.github/workflows/weibo-crawler.yml`
+
 ## 注意事项
 
 - ⚠️ **不要将 Cookie 提交到代码仓库**：Cookie 包含敏感信息，必须通过 Secrets 管理
 - 🔐 **定期更新 Cookie**：微博 Cookie 会过期，建议定期更新
 - 📝 **Cookie 格式**：确保复制完整的 Cookie 字符串，包含所有字段
 - 🛡️ **安全提示**：不要与他人分享你的 Cookie
+- 📧 **邮件安全**：SMTP_PASSWORD 请使用授权码而非邮箱密码
 
 ## 工作流说明
 
-工作流文件：`.github/workflows/weibo-crawler.yml`
-
+### 主爬虫工作流
+- **文件**：`.github/workflows/weibo-crawler.yml`
 - **触发时间**：每小时运行一次（UTC 时间）
 - **运行环境**：Ubuntu latest
 - **Python 版本**：3.11
-- **数据保留**：爬取的数据保留 7 天
+
+### Cookie 提醒工作流
+- **文件**：`.github/workflows/cookie-renewal-reminder.yml`
+- **触发时间**：每月 1 号和 26 号
+- **功能**：创建 Issue 并发送邮件提醒
 
 ## 时区调整
 

@@ -1,0 +1,89 @@
+name: Cookie Renewal Reminder
+
+on:
+  schedule:
+    # 每25天运行一次 (25天 = 25 * 24小时)
+    # 这里使用 cron 表达式，设置为每25天的午夜运行
+    # 注意：GitHub Actions 的 cron 不支持直接设置"每N天"，需要用变通方法
+    # 方案：每月1号和26号运行（间隔约25天）
+    - cron: "0 0 1,26 * *"
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Cookie Renewal Issue
+        id: create-issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🔔 Cookie 即将过期 - 需要更新 WEIBO_COOKIE`;
+            const body = `## Cookie 更新提醒
+
+            距离上次更新已过去约25天，微博 Cookie 可能即将过期。
+
+            ### 请按以下步骤更新 Cookie：
+
+            1. **登录微博**：[https://weibo.com](https://weibo.com)
+            2. **获取新 Cookie**：
+               - 按 F12 打开开发者工具
+               - 切换到 Network（网络）标签
+               - 刷新页面
+               - 点击任意请求，查看 Request Headers
+               - 找到 Cookie 字段，复制完整值
+            3. **更新 GitHub Secret**：
+               - 进入仓库 Settings → Secrets and variables → Actions
+               - 找到 WEIBO_COOKIE，点击 Update
+               - 粘贴新的 Cookie 值
+               - 点击 Save
+
+            ### Cookie 格式示例：
+            \`\`\`
+            SCF=xxx; SUB=xxx; SUBP=xxx; SSOLoginState=xxx; ALF=xxx; _T_WM=xxx
+            \`\`\`
+
+            ### 验证更新：
+            更新后，可以手动触发 [Weibo Crawler Hourly](${context.payload.repository.html_url}/actions/workflows/weibo-crawler.yml) 工作流验证是否正常工作。
+
+            ---
+            *此 Issue 由自动化工作流创建* | *创建时间：${new Date().toISOString()}*`;
+
+            // 检查是否已存在相同标题的 open issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'cookie-renewal'
+            });
+
+            const exists = issues.data.some(issue => issue.title === title);
+
+            if (!exists) {
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['cookie-renewal', 'automated']
+              });
+              console.log('✅ 已创建 Cookie 更新提醒 Issue');
+              return { created: 'true', issueNumber: issue.data.number, issueUrl: issue.data.html_url };
+            } else {
+              console.log('ℹ️ 已存在未关闭的提醒 Issue，跳过创建');
+              return { created: 'false' };
+            }
+
+      - name: Send Email Notification
+        if: steps.create-issue.outputs.created == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "🔔 微博爬虫 - Cookie 更新提醒"
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: "Weibo Crawler <${{ secrets.SMTP_USERNAME }}>"
+          html_body: "<h2>🔔 Cookie 更新提醒</h2><p>距离上次更新已过去约25天，微博 Cookie 可能即将过期。</p><h3>请按以下步骤更新 Cookie：</h3><ol><li><strong>登录微博</strong>：<a href='https://weibo.com'>https://weibo.com</a></li><li><strong>获取新 Cookie</strong>：<ul><li>按 F12 打开开发者工具</li><li>切换到 Network（网络）标签</li><li>刷新页面</li><li>点击任意请求，查看 Request Headers</li><li>找到 Cookie 字段，复制完整值</li></ul></li><li><strong>更新 GitHub Secret</strong>：<ul><li>进入仓库 Settings → Secrets and variables → Actions</li><li>找到 WEIBO_COOKIE，点击 Update</li><li>粘贴新的 Cookie 值</li><li>点击 Save</li></ul></li></ol><h3>相关链接：</h3><ul><li><a href='${{ steps.create-issue.outputs.issueUrl }}'>查看提醒 Issue</a></li><li><a href='${{ github.server_url }}/${{ github.repository }}/actions/workflows/weibo-crawler.yml'>手动触发爬虫</a></li></ul><hr><p><small>此邮件由自动化工作流发送 | 仓库：${{ github.repository }}</small></p>"
+          convert_markdown: false
