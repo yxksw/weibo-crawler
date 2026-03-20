@@ -21,7 +21,7 @@
     "comment_max_download_count": 100, // 单条微博最大评论下载数量， 仅当 download_comment = 1 时生效
     "download_repost": 1, // 是否下载转发 0 = 不下载，1 = 下载
     "repost_max_download_count": 100, // 单条微博最大转发下载数量， 仅当 download_repost = 1 时生效
-    "output_directory": "weibo_data", // 数据输出目录
+    "output_directory": "weibo", // 数据输出目录
     "user_id_as_folder_name": 0, // 是否以用户ID作为子文件夹名称 0 = 否，1 = 是
     "remove_html_tag": 0, // 是否移除微博内容中的HTML标签 0 = 否，1 = 是
     "cookie": "", // 微博 Cookie（重要！）建议留空，使用环境变量 WEIBO_COOKIE 提供
