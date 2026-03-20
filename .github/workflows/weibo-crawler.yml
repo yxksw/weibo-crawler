@@ -105,7 +105,7 @@ jobs:
                   to: ${{ secrets.NOTIFICATION_EMAIL }}
                   from: "Weibo Crawler <${{ secrets.SMTP_USERNAME }}>"
                   html_body: "<h2>🚨 Cookie 失效警告</h2><p>爬虫在最近一次运行时失败，可能是由于 <strong>Cookie 过期</strong>导致的。</p><h3>请按以下步骤更新 Cookie：</h3><ol><li><strong>登录微博</strong>：<a href='https://weibo.com'>https://weibo.com</a></li><li><strong>获取新 Cookie</strong>：<ul><li>按 F12 打开开发者工具</li><li>切换到 Network（网络）标签</li><li>刷新页面</li><li>点击任意请求，查看 Request Headers</li><li>找到 Cookie 字段，复制完整值</li></ul></li><li><strong>更新 GitHub Secret</strong>：<ul><li>进入仓库 Settings → Secrets and variables → Actions</li><li>找到 WEIBO_COOKIE，点击 Update</li><li>粘贴新的 Cookie 值</li><li>点击 Save</li></ul></li></ol><h3>相关链接：</h3><ul><li><a href='${{ steps.check-cookie.outputs.issueUrl }}'>查看警告 Issue</a></li><li><a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.runId }}'>查看失败日志</a></li></ul><hr><p><small>此邮件由自动化工作流发送 | 仓库：${{ github.repository }}</small></p>"
-                  convert_markdown: false
+                  secure: true
 
             - name: Fail if crawler failed
               if: steps.crawler.outcome == 'failure'
