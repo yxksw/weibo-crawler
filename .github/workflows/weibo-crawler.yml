@@ -36,6 +36,6 @@ jobs:
         if: always()
         with:
           name: weibo-data-${{ github.run_id }}
-          path: weibo_data/
+          path: weibo/
           retention-days: 7
           if-no-files-found: ignore
